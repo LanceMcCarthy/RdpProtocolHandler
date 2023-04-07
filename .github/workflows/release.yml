@@ -35,7 +35,6 @@ jobs:
         $buildDay = Get-Date -Format "yyyy.Mdd"
         $runNumber = "$env:GITHUB_RUN_NUMBER"
         $ver = $buildDay + "." + $runNumber + ".0"
-        echo "APP_VERSION=$ver" >> $GITHUB_OUTPUT
         echo "APP_VERSION=$ver" >> $GITHUB_ENV
     
     - name: Update app's assembly version
@@ -46,7 +45,7 @@ jobs:
               $verStart = $_.IndexOf("(")
               $verEnd = $_.IndexOf(")", $verStart)
               $origVersion = $_.SubString($verStart+2, $verEnd-$verStart-3)
-              $newVersion = "${{ steps.version-creator.outputs.APP_VERSION }}"
+              $newVersion = "${{ env.APP_VERSION }}"
               write-host "Setting AssemblyFileVersion from $origVersion to $newVersion"
               $_.Replace($origVersion, $newVersion)
             }  else {
@@ -56,7 +55,7 @@ jobs:
           $newfile | Set-Content $assemblyInfoPath -encoding "UTF8"
         }
         $assemblyInfoPath = "src\RdpProtocolHandler\Properties\AssemblyInfo.cs"
-        SetAssemblyFileVersion $assemblyInfoPath "${{ steps.version-creator.outputs.APP_VERSION }}"
+        SetAssemblyFileVersion $assemblyInfoPath "${{ env.APP_VERSION }}"
    
     - name: Install NuGet packages
       run: dotnet restore ${{ env.CSPROJ_PATH }} --runtime ${{ env.RID }}
@@ -69,12 +68,7 @@ jobs:
     
     - name: ZIP up artifact
       id: zipper
-      run: |
-        $source = "src\RdpProtocolHandler\bin\Release"
-        $dest = "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
-        Compress-Archive -Path $source -DestinationPath $dest
-        echo "ZIP_PATH=$dest" >> $GITHUB_OUTPUT
-
+      run: Compress-Archive -Path "src\RdpProtocolHandler\bin\Release" -DestinationPath "RdpProtocolHandler_${{ env.APP_VERSION }}_${{ env.RID }}.zip"
 
     - name: Create GitHub Release
       id: create_release
@@ -82,8 +76,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: "v${{ steps.version-creator.outputs.APP_VERSION }}"
-        release_name: "Release ${{ steps.version-creator.outputs.APP_VERSION }}"
+        tag_name: "v${{ env.APP_VERSION }}"
+        release_name: "Release ${{ env.APP_VERSION }}"
         body_path: .github\other\releasebody.md
 
     - name: Attach Release Asset
@@ -93,6 +87,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.zipper.outputs.ZIP_PATH }}
-        asset_name: ${{ steps.zipper.outputs.ZIP_PATH }}
+        asset_path: "RdpProtocolHandler_${{ env.APP_VERSION }}_${{ env.RID }}.zip"
+        asset_name: "RdpProtocolHandler_${{ env.APP_VERSION }}_${{ env.RID }}.zip"
         asset_content_type: application/zip
