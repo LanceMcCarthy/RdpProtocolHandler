@@ -66,24 +66,17 @@ jobs:
     - name: Build project
       run: msbuild ${{ env.CSPROJ_PATH }} /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RuntimeIdentifier=${{ env.RID }}
 
-    - uses: actions/upload-artifact@v3
-      with:
-        name: app
-        path: src/RdpProtocolHandler/bin/Release
-
-    # ***** GitHub Release ***** #
-
     - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: "v.${{ steps.version-creator.outputs.APP_VERSION }}.${{  env.GITHUB_RUN_ID }}"
+        tag_name: "v${{ steps.version-creator.outputs.APP_VERSION }}"
         release_name: "Release ${{ steps.version-creator.outputs.APP_VERSION }}"
         draft: false
         prerelease: false
-        body_path: .github\releasebody.md
+        body_path: .github\other\releasebody.md
 
     - name: Attach Release Asset
       id: upload-sideload-asset
