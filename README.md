@@ -1,15 +1,22 @@
 # RDP Protocol Handler
-This simple app allows you to use `rdp://` uri to start remote desktop session. So you can use uri like this:
 
-`rdp://remote.server.address`
-
-and you will see Remote Desktop Connection window if you do not have saved credentials, otherwise you will be automatically connected.
+This simple app allows you to use `rdp://` uri protocol to quickly boostrap a remote desktop session. Opening a uri like `rdp://remote.server.address`, a Remote Desktop Connection window will open.
 
 ![Remote Desktop Connection window](img/remoteDesktopWindow.png "Logo Title Text 1")
 
-> [Release Notes and Download](https://github.com/LanceMcCarthy/RdpProtocolHandler/releases)
+Alternatively, if you have stored credentials, you will skip this step and automatically connect to the machine.
+
+## Build and Releases
+
+You can find the latest release and quick-start instructions on the [Releases page](https://github.com/LanceMcCarthy/RdpProtocolHandler/releases).
+
+| workflow | status |
+|----------|--------|
+| `master` | [![Build](https://github.com/LanceMcCarthy/RdpProtocolHandler/actions/workflows/ci.yml/badge.svg)](https://github.com/LanceMcCarthy/RdpProtocolHandler/actions/workflows/ci.yml) |
+| `release` | [![Release](https://github.com/LanceMcCarthy/RdpProtocolHandler/actions/workflows/release.yml/badge.svg)](https://github.com/LanceMcCarthy/RdpProtocolHandler/actions/workflows/release.yml) |
 
 ## How to install
+
 Place the `.exe` file in desired location on your PC, then run it **as administrator** with `/install` parameter like this:
 
 `rdpProtocoleHandler.exe /install`
@@ -17,6 +24,7 @@ Place the `.exe` file in desired location on your PC, then run it **as administr
 After installation do not move the `.exe` file to other location. When you change the file location the protocol handler will not work until you run it again with `/install` parameter.
 
 ## How to use
+
 Just open uri which start with `rdp://` using browser or any other way.
 
 ### Uri format
@@ -29,6 +37,7 @@ Each parameter in the uri is separated by comma `,`. First parameter is always t
 `mstsc /?`
 
 #### Examples
+
 Run Remote Desktop with specific window width and high
 
 `rdp://remote.server.address,/w:600,/h:400`
