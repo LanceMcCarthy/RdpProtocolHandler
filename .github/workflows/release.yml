@@ -77,7 +77,7 @@ jobs:
       with:
         file: src/RdpProtocolHandler/bin/Release/RdpProtocolHandler.exe
         certificate-data: ${{ secrets.LANCELOT_PFX_DATA }}
-        certificate-password: ${{ secrets.WINDOZE_CERT_PASSWORD }}
+        certificate-password: ${{ secrets.LANCELOT_PFX_PASSWORD }}
 
 
 # *********** PUBLISH *********** #
