@@ -29,9 +29,6 @@ jobs:
       run: |
         $buildDay = Get-Date -Format "yyyy.Mdd"
         $ver = "$buildDay" + "." + "${{ github.RUN_NUMBER }}" + ".0"
-
-        echo "SELECTED_COLOR=green" >> $GITHUB_ENV
-        echo "ACTION_STATE=yellow" >> $GITHUB_OUTPUT
         echo "::set-output name=APP_VERSION::$ver"
 
     - name: Use the value
