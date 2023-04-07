@@ -83,7 +83,7 @@ jobs:
         release_name: "Release ${{ steps.version-creator.outputs.APP_VERSION }}"
         draft: false
         prerelease: false
-        body_path: .github\other\releasebody.md
+        body_path: .github\releasebody.md
 
     - name: Attach Release Asset
       id: upload-sideload-asset
