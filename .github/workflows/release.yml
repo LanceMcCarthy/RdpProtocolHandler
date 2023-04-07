@@ -83,6 +83,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: src\RdpProtocolHandler\bin\Release\
+        asset_path: src/RdpProtocolHandler/bin/Release
         asset_name: "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
         asset_content_type: application/zip
