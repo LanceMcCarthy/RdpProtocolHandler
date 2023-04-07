@@ -7,7 +7,7 @@ on:
     paths: [ 'src/**/*', '.github/workflows/release.yml' ]
 
 jobs:
-  build_console:
+  build_and_release:
     runs-on: windows-latest
     env:
       RID: win-x64
@@ -35,7 +35,7 @@ jobs:
         $buildDay = Get-Date -Format "yyyy.Mdd"
         $runNumber = "$env:GITHUB_RUN_NUMBER"
         $ver = $buildDay + "." + $runNumber + ".0"
-        echo "::set-output name=APP_VERSION::$ver"
+        echo "APP_VERSION=$ver" >> $GITHUB_OUTPUT
     
     - name: Update app's assembly version
       run: |
@@ -74,8 +74,6 @@ jobs:
       with:
         tag_name: "v${{ steps.version-creator.outputs.APP_VERSION }}"
         release_name: "Release ${{ steps.version-creator.outputs.APP_VERSION }}"
-        draft: false
-        prerelease: false
         body_path: .github\other\releasebody.md
 
     - name: Attach Release Asset
@@ -85,6 +83,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "src/RdpProtocolHandler/bin/Release/"
+        asset_path: src\RdpProtocolHandler\bin\Release\
         asset_name: "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
         asset_content_type: application/zip
