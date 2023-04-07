@@ -28,7 +28,7 @@ jobs:
       id: version-creator
       run: |
         $buildDay = Get-Date -Format "yyyy.Mdd"
-        $ver = "$buildDay" + "." + ${{ github.RUN_NUMBER }}" + ".0"
+        $ver = "$buildDay" + "." + "${{ github.RUN_NUMBER }}" + ".0"
 
         echo "SELECTED_COLOR=green" >> $GITHUB_ENV
         echo "ACTION_STATE=yellow" >> $GITHUB_OUTPUT
