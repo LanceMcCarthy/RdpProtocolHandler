@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ release ]
-    paths: [ 'src/**/*', '.github/workflows/ci.yml' ]
+    paths: [ 'src/**/*', '.github/workflows/release.yml' ]
 
 jobs:
   build_console:
