@@ -29,13 +29,14 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.1.3
 
+# *********** PREPARE *********** #
+
     - name: Generate version number with date and workflow Run Number
       id: version-creator
       run: |
         $buildDay = Get-Date -Format "yyyy.Mdd"
-        $runNumber = "$env:GITHUB_RUN_NUMBER"
-        $ver = $buildDay + "." + $runNumber + ".0"
-        echo "APP_VERSION=$ver" >> $GITHUB_ENV
+        $ver = "$buildDay" + "." + "${{ github.RUN_NUMBER }}" + ".0"
+        echo "::set-output name=APP_VERSION::$ver"
     
     - name: Update app's assembly version
       run: |
@@ -45,7 +46,7 @@ jobs:
               $verStart = $_.IndexOf("(")
               $verEnd = $_.IndexOf(")", $verStart)
               $origVersion = $_.SubString($verStart+2, $verEnd-$verStart-3)
-              $newVersion = "${{ env.APP_VERSION }}"
+              $newVersion = "${{ steps.version-creator.outputs.APP_VERSION }}"
               write-host "Setting AssemblyFileVersion from $origVersion to $newVersion"
               $_.Replace($origVersion, $newVersion)
             }  else {
@@ -55,8 +56,10 @@ jobs:
           $newfile | Set-Content $assemblyInfoPath -encoding "UTF8"
         }
         $assemblyInfoPath = "src\RdpProtocolHandler\Properties\AssemblyInfo.cs"
-        SetAssemblyFileVersion $assemblyInfoPath "${{ env.APP_VERSION }}"
-   
+        SetAssemblyFileVersion $assemblyInfoPath "${{ steps.version-creator.outputs.APP_VERSION }}"
+
+# *********** BUILD *********** #
+
     - name: Install NuGet packages
       run: dotnet restore ${{ env.CSPROJ_PATH }} --runtime ${{ env.RID }}
 
@@ -66,9 +69,22 @@ jobs:
     - name: Build project
       run: msbuild ${{ env.CSPROJ_PATH }} /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RuntimeIdentifier=${{ env.RID }}
     
+
+# *********** CODESIGN *********** #
+
+    - name: Code Sign binary
+      uses: lando/code-sign-action@v2
+      with:
+        file: src/RdpProtocolHandler/bin/Release/RdpProtocolHandler.exe
+        certificate-data: ${{ secrets.LANCELOT_PFX_DATA }}
+        certificate-password: ${{ secrets.WINDOZE_CERT_PASSWORD }}
+
+
+# *********** PUBLISH *********** #
+
     - name: ZIP up artifact
       id: zipper
-      run: Compress-Archive -Path "src\RdpProtocolHandler\bin\Release" -DestinationPath "RdpProtocolHandler_${{ env.APP_VERSION }}_${{ env.RID }}.zip"
+      run: Compress-Archive -Path "src\RdpProtocolHandler\bin\Release\*" -DestinationPath "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
 
     - name: Create GitHub Release
       id: create_release
@@ -76,8 +92,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: "v${{ env.APP_VERSION }}"
-        release_name: "Release ${{ env.APP_VERSION }}"
+        tag_name: "v${{ steps.version-creator.outputs.APP_VERSION }}"
+        release_name: "Release ${{ steps.version-creator.outputs.APP_VERSION }}"
         body_path: .github\other\releasebody.md
 
     - name: Attach Release Asset
@@ -87,6 +103,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "RdpProtocolHandler_${{ env.APP_VERSION }}_${{ env.RID }}.zip"
-        asset_name: "RdpProtocolHandler_${{ env.APP_VERSION }}_${{ env.RID }}.zip"
+        asset_path: "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
+        asset_name: "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
         asset_content_type: application/zip
