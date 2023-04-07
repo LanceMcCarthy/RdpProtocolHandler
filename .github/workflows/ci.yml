@@ -24,6 +24,25 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Generate version number with date and workflow Run Number
+      id: version-creator
+      run: |
+        $buildDay = Get-Date -Format "yyyy.Mdd"
+        $runNumber = "$env:GITHUB_RUN_NUMBER"
+        $ver = $buildDay + "." + $runNumber + ".0"
+
+        echo "app_ver_output=$ver" >> $GITHUB_OUTPUT
+        echo "app_ver_var=$ver" >> $GITHUB_ENV
+
+    - name: Use the value
+      id: step_two
+      run: |
+        echo "old style run_number: $env:GITHUB_RUN_NUMBER"
+        echo "new style run_number: ${{ github.RUN_NUMBER }}"
+        
+        echo "app_ver_var: ${{ env.app_ver_var }}"
+        echo "app_ver_output: ${{ steps.version-creator.outputs.app_ver_output }}"
+
     - name: Install .NET
       uses: actions/setup-dotnet@v3
       with:
