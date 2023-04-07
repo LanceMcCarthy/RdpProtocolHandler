@@ -84,7 +84,7 @@ jobs:
 
     - name: ZIP up artifact
       id: zipper
-      run: Compress-Archive -Path "src\RdpProtocolHandler\bin\Release" -DestinationPath "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
+      run: Compress-Archive -Path "src\RdpProtocolHandler\bin\Release\*" -DestinationPath "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
 
     - name: Create GitHub Release
       id: create_release
