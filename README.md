@@ -7,7 +7,7 @@ and you will see Remote Desktop Connection window if you do not have saved crede
 
 ![Remote Desktop Connection window](img/remoteDesktopWindow.png "Logo Title Text 1")
 
-### [Release Notes and Download](https://github.com/konradsikorski/RdpProtocolHandler/releases)
+> [Release Notes and Download](https://github.com/LanceMcCarthy/RdpProtocolHandler/releases)
 
 ## How to install
 Place the `.exe` file in desired location on your PC, then run it **as administrator** with `/install` parameter like this:
