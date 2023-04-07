@@ -28,7 +28,7 @@ jobs:
       id: version-creator
       run: |
         $buildDay = Get-Date -Format "yyyy.Mdd"
-        $ver = "$buildDay.${{ github.RUN_NUMBER }}.0"
+        $ver = "$buildDay" + "." + ${{ github.RUN_NUMBER }}" + ".0"
 
         echo "SELECTED_COLOR=green" >> $GITHUB_ENV
         echo "ACTION_STATE=yellow" >> $GITHUB_OUTPUT
@@ -37,9 +37,9 @@ jobs:
     - name: Use the value
       id: step_two
       run: |
-        echo "New set output ${{ steps.version-creator.outputs.action_state }}"
-        echo "Old set output ${{ steps.version-creator.outputs.APP_VERSION }}"
-        echo "The selected color is ${{ env.SELECTED_COLOR }}"
+        echo "ACTION_STATE output ${{ steps.version-creator.outputs.action_state }}"
+        echo "APP_VERSION output ${{ steps.version-creator.outputs.APP_VERSION }}"
+        echo "SELECTED_COLOR env var ${{ env.SELECTED_COLOR }}"
 
     - name: Install .NET
       uses: actions/setup-dotnet@v3
