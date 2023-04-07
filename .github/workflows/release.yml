@@ -36,6 +36,7 @@ jobs:
         $runNumber = "$env:GITHUB_RUN_NUMBER"
         $ver = $buildDay + "." + $runNumber + ".0"
         echo "APP_VERSION=$ver" >> $GITHUB_OUTPUT
+        echo "APP_VERSION=$ver" >> $GITHUB_ENV
     
     - name: Update app's assembly version
       run: |
@@ -65,6 +66,15 @@ jobs:
 
     - name: Build project
       run: msbuild ${{ env.CSPROJ_PATH }} /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RuntimeIdentifier=${{ env.RID }}
+    
+    - name: ZIP up artifact
+      id: zipper
+      run: |
+        $source = "src\RdpProtocolHandler\bin\Release"
+        $dest = "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
+        Compress-Archive -Path $source -DestinationPath $dest
+        echo "ZIP_PATH=$dest" >> $GITHUB_OUTPUT
+
 
     - name: Create GitHub Release
       id: create_release
@@ -83,6 +93,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: src/RdpProtocolHandler/bin/Release
-        asset_name: "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
+        asset_path: ${{ steps.zipper.outputs.ZIP_PATH }}
+        asset_name: ${{ steps.zipper.outputs.ZIP_PATH }}
         asset_content_type: application/zip
