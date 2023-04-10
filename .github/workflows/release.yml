@@ -70,7 +70,7 @@ jobs:
     
     - name: Sign PowerShell Scripts
       run: |
-        $scripts = Get-ChildItem -Path "src\RdpProtocolHandler\bin\Release\" -Filter "*.ps1" -Recurse -ErrorAction Stop
+        $scripts = Get-ChildItem -Path ".scripts\" -Filter "*.ps1" -Recurse -ErrorAction Stop
         $codeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
         foreach ($script in $scripts) {
           try {
@@ -83,6 +83,9 @@ jobs:
           }
         }
 
+    - name: Remove code signing certificate
+      shell: powershell
+      run: Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1 | Remove-Item
 
 # *********** BUILD *********** #
 
