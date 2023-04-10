@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace KonradSikorski.Tools.RdpProtocolHandler;
+namespace RdpProtocolHandler;
 
 class Program
 {
@@ -11,7 +11,9 @@ class Program
     static void Main(string[] args)
     {
         AppDomain.CurrentDomain.UnhandledException += UnhandledException;
+
         LogHelper.ConfigureNLog();
+
         Log.Info($"{string.Join(" | ", args)}");
 
         if (args.Length == 0)
@@ -20,15 +22,21 @@ class Program
         }
         else
         {
-            var parameter = args[0];
+            var parameter = args[0].ToLower();
 
-            switch (parameter.ToLower())
+            switch (parameter)
             {
-                case "/uninstall": InstallationHelper.Uninstall(); break;
-                case "/install": InstallationHelper.Install(false); break;
-                case "/log": LogHelper.OpenLogFile(); break;
-                case "/help":
-                case "/?":
+                case AppConstants.CommandInstall:
+                    InstallationHelper.Install();
+                    break;
+                case AppConstants.CommandUninstall: 
+                    InstallationHelper.Uninstall(); 
+                    break;
+                case AppConstants.CommandLog:
+                    LogHelper.OpenLogFile();
+                    break;
+                case AppConstants.CommandHelp:
+                case AppConstants.CommandQuestion:
                     InstallationHelper.Help(); 
                     break;
                 default:
