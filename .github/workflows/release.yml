@@ -89,10 +89,16 @@ jobs:
     - name: Code Sign Scripts
       run: |
         $pfxCertFilePath = Join-Path -Path $PSScriptRoot -ChildPath "CodeSigningCertificate.pfx"
-        Set-Content -Value $([System.Convert]::FromBase64String(${{ secrets.LANCELOT_PFX_DATA }})) -Path $pfxCertFilePath -Encoding Byte
-        $codeSigningCert = Import-PfxCertificate -FilePath $pfxCertFilePath -Password $(${{ secrets.LANCELOT_PFX_PASSWORD }} | ConvertTo-SecureString -AsPlainText -Force) -CertStoreLocation Cert:\CurrentUser\My
-        $scripts = Get-ChildItem -Path "src\RdpProtocolHandler\bin\Release\" -Filter "*.ps1" -Recurse -ErrorAction Stop
+        $pfxData = ${{ secrets.LANCELOT_PFX_DATA }}
+        Set-Content -Value $([System.Convert]::FromBase64String($pfxData)) -Path $pfxCertFilePath -Encoding Byte
+
+        $pwd = ConvertTo-SecureString -String ${{ secrets.LANCELOT_PFX_PASSWORD }} -Force -AsPlainText
+        $codeSigningCert = Import-PfxCertificate -FilePath $pfxCertFilePath -Password $pwd -CertStoreLocation Cert:\CurrentUser\My
+
         $codeSigningCert = Get-ChildItem Cert:\CurrentUser\My -CodeSigningCert | Select-Object -First 1
+        
+        $scripts = Get-ChildItem -Path "src\RdpProtocolHandler\bin\Release\" -Filter "*.ps1" -Recurse -ErrorAction Stop
+
         foreach ($script in $scripts) {
           try {
                 $scriptContent = Get-Content -Path $script.FullName
