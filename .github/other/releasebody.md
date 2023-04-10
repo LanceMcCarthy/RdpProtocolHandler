@@ -1,14 +1,19 @@
-## Installation
+## Automatic Installation (recommended)
 
-To install, use the following command with administrator rights.
+Execute the `install.ps1` / `uninstall.ps1` to install/uninstall the protocol handler.
 
-`rdpProtocoleHandler.exe /install`
+This will automatically install the handler at a common location: *C:/Program Files/RdpProtocolHandler/*.
 
-To uninstall:
+## Manual Installation
 
-`rdpProtocoleHandler.exe /uninstall`
+Open Windows Terminal (or plain PowerShell), as administrator, in the same directory as RdpProtocoleHandler.exe and use the desired command:
 
-**Important**: *Do not move the files after you've installed.* The handler's exe will be registered at its current path. If you need to move it, use the `/uninstall` command first, then move it and use the `/install` command again at the new location.
+| Command | Action |
+|---------|-----|
+| `.\RdpProtocoleHandler.exe /install` | Install |
+| `.\RdpProtocoleHandler.exe /uninstall` | Uninstall |
+
+**Important: Do not move the files after you've installed.** The handler's exe will be registered at its current path. If you need to move it, use the `/uninstall` command first, then move it to the new location reinstall it. The 
 
 ## Usage
 
@@ -25,5 +30,5 @@ Each parameter in the uri is separated by comma `,` and the first parameter is a
 | Basic | `rdp://remote.server.address` |
 | With a specific window dimensions | `rdp://remote.server.address,/w:600,/h:400` |
 | using all monitors | `rdp://remote.server.address,/multimon` |
-| With a username | `rdp://remote.server.address,/user:"username"` |
-| With username and password | `rdp://remote.server.address,/user:"username-here",/pass:"password-here"` |
+
+Note: Password and username variables are not available for mstsc. You will get a prompt the first time you connect to a machine. If you have previous connected and store credentials, this will be skipped
