@@ -6,7 +6,8 @@ $result = Get-Item "C:\Program Files\RdpProtocolHandler\*.*"
 
 if($null -ne $result) {
     Write-Output "Checking for previous RdpProtocolHandler installation..."
-    Start-Process ".\RdpProtocolHandler.exe" -ArgumentList "/uinstall" -Wait
+    $uninstallProcess = Start-Process ".\RdpProtocolHandler.exe" -ArgumentList "/uinstall" -Verb RunAs -PassThru
+    $uninstallProcess.WaitForExit()
 }
 else{
     Write-Output "RdpProtocolHandler was not installed, moving forward with installation."
@@ -22,6 +23,8 @@ Write-Output "Changing to installation directory..."
 Set-Location "C:\Program Files\RdpProtocolHandler"
 
 Write-Output "Installing RdpProtocolHandler..."
-Start-Process ".\RdpProtocolHandler.exe" -ArgumentList "/install" -Wait
+
+$installProcess = Start-Process ".\RdpProtocolHandler.exe" -ArgumentList "/install" -Verb RunAs -PassThru
+$installProcess.WaitForExit()
 
 Write-Output "Done!"

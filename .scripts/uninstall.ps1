@@ -6,7 +6,8 @@ $result = Get-Item "C:\Program Files\RdpProtocolHandler\*.*"
 
 if($null -ne $result) {
     Write-Output "Uninstalling RdpProtocolHandler..."
-    Start-Process ".\RdpProtocolHandler.exe" -ArgumentList "/uinstall" -Wait
+    $uninstallProcess = Start-Process ".\RdpProtocolHandler.exe" -ArgumentList "/uninstall" -Verb RunAs -PassThru
+    $uninstallProcess.WaitForExit()
 }
 else{
     Write-Output "RdpProtocolHandler was not installed."
