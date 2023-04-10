@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Handle rdp:// uri in the system and start Remote Desktop Connection with any advanced parameters.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lancelot Software LLC")]
-[assembly: AssemblyProduct("RdpProtocolHandler.Console")]
+[assembly: AssemblyProduct("RdpProtocolHandler")]
 [assembly: AssemblyCopyright("Copyright © Lance McCarthy 2023, Konrad Sikorski 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
