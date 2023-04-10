@@ -69,27 +69,35 @@ jobs:
     - name: Build project
       run: msbuild ${{ env.CSPROJ_PATH }} /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RuntimeIdentifier=${{ env.RID }}
     
+    - name: Copy Extra Content to Build Output
+      id: zipper
+      run: |
+        # Copy the installation scripts
+        Copy-Item -Path ".scripts\install.ps1" -Destination "src\RdpProtocolHandler\bin\Release\"
+        Copy-Item -Path ".scripts\uninstall.ps1" -Destination "src\RdpProtocolHandler\bin\Release\"
+        # Copy the help page
+        Copy-Item -Path ".github\other\releasebody.md" -Destination "src\RdpProtocolHandler\bin\Release\"
 
 # *********** CODESIGN *********** #
 
     - name: Code Sign binary
       uses: lando/code-sign-action@v2
       with:
-        file: src/RdpProtocolHandler/bin/Release/RdpProtocolHandler.exe
+        file: src\RdpProtocolHandler\bin\Release\RdpProtocolHandler.exe
         certificate-data: ${{ secrets.LANCELOT_PFX_DATA }}
         certificate-password: ${{ secrets.LANCELOT_PFX_PASSWORD }}
 
     - name: Code Sign Installation script
       uses: lando/code-sign-action@v2
       with:
-        file: .scripts/install.ps1
+        file: .scripts\install.ps1
         certificate-data: ${{ secrets.LANCELOT_PFX_DATA }}
         certificate-password: ${{ secrets.LANCELOT_PFX_PASSWORD }}
 
     - name: Code Sign Uninstallation script
       uses: lando/code-sign-action@v2
       with:
-        file: .scripts/uninstall.ps1
+        file: .scripts\uninstall.ps1
         certificate-data: ${{ secrets.LANCELOT_PFX_DATA }}
         certificate-password: ${{ secrets.LANCELOT_PFX_PASSWORD }}
 
@@ -97,15 +105,7 @@ jobs:
 
     - name: ZIP up artifact
       id: zipper
-      run: |
-        # Copy the installation scripts
-        Copy-Item -Path ".scripts\*.*" -Destination "src\RdpProtocolHandler\bin\Release\"
-
-        # Copy the help page
-        Copy-Item -Path ".github\other\releasebody.md" -Destination "src\RdpProtocolHandler\bin\Release\"
-
-        # zip everything up
-        Compress-Archive -Path "src\RdpProtocolHandler\bin\Release\*" -DestinationPath "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
+      run: Compress-Archive -Path "src\RdpProtocolHandler\bin\Release\*" -DestinationPath "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
 
     - name: Create GitHub Release
       id: create_release
