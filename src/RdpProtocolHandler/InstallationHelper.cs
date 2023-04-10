@@ -1,15 +1,13 @@
 ﻿using Microsoft.Win32;
 using NLog.Fluent;
+using System;
 using System.Reflection;
 using System.Security.Principal;
-using System;
 
-namespace KonradSikorski.Tools.RdpProtocolHandler;
+namespace RdpProtocolHandler;
 
 internal static class InstallationHelper
 {
-    private const string REGISTRY_KEY_NAME = "RDP";
-
     internal static void Help()
     {
         ConsoleWrapper.Alloc();
@@ -19,44 +17,42 @@ internal static class InstallationHelper
     internal static void Uninstall()
     {
         ConsoleWrapper.Alloc();
-        if (!RequireAdministratorPrivileges()) return;
 
-        Registry.ClassesRoot.DeleteSubKeyTree(REGISTRY_KEY_NAME, false);
+        if (!RequireAdministratorPrivileges()) 
+            return;
+
+        Registry.ClassesRoot.DeleteSubKeyTree(AppConstants.RegistryKeyName, false);
         ConsoleWrapper.WriteLine("RDP Protocol Handler uninstalled.");
+
         Log.Info("RDP Protocol Handler uninstalled.");
     }
 
-    internal static void Install(bool prompt = true)
+    internal static void Install()
     {
         ConsoleWrapper.Alloc();
 
-        if (!RequireAdministratorPrivileges()) return;
-
-        //if (prompt)
-        //{
-        //    ConsoleWrapper.Write("Do you want to install RDP Protocol handler? (for details use /?) [Y]es [N]o:");
-        //    var result = ConsoleWrapper.ReadLine();
-        //    if (result?.ToLower() != "y") return;
-        //}
-
+        if (!RequireAdministratorPrivileges()) 
+            return;
+        
         Uninstall();
 
-        //-- get assembly info
+        // Get assembly info
         var assembly = Assembly.GetExecutingAssembly();
         var handlerLocation = assembly.Location;
 
-        //-- create registry structure
-        var rootKey = Registry.ClassesRoot.CreateSubKey(REGISTRY_KEY_NAME);
+        // Create registry structure
+        var rootKey = Registry.ClassesRoot.CreateSubKey(AppConstants.RegistryKeyName);
         var defaultIconKey = rootKey?.CreateSubKey("DefaultIcon");
         var commandKey = rootKey?.CreateSubKey("shell")?.CreateSubKey("open")?.CreateSubKey("command");
 
         rootKey?.SetValue("", "rdp:Remote Desktop Protocol");
         rootKey?.SetValue("URL Protocol", "");
-        defaultIconKey?.SetValue("", @"C:\Windows\System32\mstsc.exe");
+        defaultIconKey?.SetValue("", AppConstants.MstscPath);
         commandKey?.SetValue("", $@"""{handlerLocation}"" ""%1""");
 
-        //--
+        // Write log and display output.
         Log.Info("RDP Protocol Handler installed");
+
         ConsoleWrapper.WriteLine("RDP Protocol Handler installed");
         ConsoleWrapper.WriteLine($"WARNING: Do not move this '{assembly.FullName}' to other location, otherwise handler will not work. If you change the location run installation process again.");
     }
@@ -68,10 +64,12 @@ internal static class InstallationHelper
         if (!isAdmin)
         {
             var oldColor = ConsoleWrapper.ForegroundColor;
+
             ConsoleWrapper.ForegroundColor = ConsoleColor.Red;
-            ConsoleWrapper.WriteLine("You must be system administrator");
+            ConsoleWrapper.WriteLine(AppConstants.MessageAdminRequired);
             ConsoleWrapper.ForegroundColor = oldColor;
-            Log.Error("You must be system administrator");
+
+            Log.Error(AppConstants.MessageAdminRequired);
         }
 
         return isAdmin;
@@ -83,8 +81,8 @@ internal static class InstallationHelper
 
         try
         {
-            //get the currently logged in user
             var principal = new WindowsPrincipal(user);
+
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
         catch (UnauthorizedAccessException)
