@@ -6,7 +6,7 @@ using System.IO;
 using System;
 using System.Linq;
 
-namespace KonradSikorski.Tools.RdpProtocolHandler;
+namespace RdpProtocolHandler;
 
 internal static class LogHelper
 {

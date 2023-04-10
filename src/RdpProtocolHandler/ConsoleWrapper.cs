@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace KonradSikorski.Tools.RdpProtocolHandler;
+namespace RdpProtocolHandler;
 
 public static class ConsoleWrapper
 {
     public static bool Initialized { get; private set; }
 
-    [DllImport("kernel32.dll", SetLastError = true)]
+    [DllImport(AppConstants.Kernel32DllName, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool AllocConsole();
+    private static extern bool AllocConsole();
 
     public static void Alloc()
     {
