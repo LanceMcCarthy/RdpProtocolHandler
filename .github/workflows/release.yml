@@ -79,12 +79,27 @@ jobs:
         certificate-data: ${{ secrets.LANCELOT_PFX_DATA }}
         certificate-password: ${{ secrets.LANCELOT_PFX_PASSWORD }}
 
+    - name: Code Sign Installation script
+      uses: lando/code-sign-action@v2
+      with:
+        file: .scripts/install.ps1
+        certificate-data: ${{ secrets.LANCELOT_PFX_DATA }}
+        certificate-password: ${{ secrets.LANCELOT_PFX_PASSWORD }}
+
+    - name: Code Sign Uninstallation script
+      uses: lando/code-sign-action@v2
+      with:
+        file: .scripts/uninstall.ps1
+        certificate-data: ${{ secrets.LANCELOT_PFX_DATA }}
+        certificate-password: ${{ secrets.LANCELOT_PFX_PASSWORD }}
 
 # *********** PUBLISH *********** #
 
     - name: ZIP up artifact
       id: zipper
-      run: Compress-Archive -Path "src\RdpProtocolHandler\bin\Release\*" -DestinationPath "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
+      run: |
+        Copy-Item -Path ".scripts\*.*" -Destination ".\"
+        Compress-Archive -Path "src\RdpProtocolHandler\bin\Release\*" -DestinationPath "RdpProtocolHandler_${{ steps.version-creator.outputs.APP_VERSION }}_${{ env.RID }}.zip"
 
     - name: Create GitHub Release
       id: create_release
