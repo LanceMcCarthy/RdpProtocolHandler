@@ -2,7 +2,7 @@
 
 This simple app allows you to use `rdp://` uri protocol to quickly boostrap a remote desktop session. Opening a uri like `rdp://remote.server.address`, a Remote Desktop Connection window will open.
 
-![Remote Desktop Connection window](img/remoteDesktopWindow.png "Logo Title Text 1")
+![Remote Desktop Connection](img/remoteDesktopWindow.png)
 
 Alternatively, if you have stored credentials, you will skip this step and automatically connect to the machine.
 
@@ -57,14 +57,26 @@ Parameter       | Description
  /help          | Open the help
  /?             | Open the help
 
-#### Examples
-Install rdp uri handler
+## Installation
 
-`rdpProtocoleHandler.exe /install`
+### Automatic Installation (recommended)
 
-Uninstall rdp uri handler
+Execute the `install.ps1` / `uninstall.ps1` to install/uninstall the protocol handler:
 
-`rdpProtocoleHandler.exe /uninstall`
+![Install](https://github.com/LanceMcCarthy/RdpProtocolHandler/blob/master/img/install.png?raw=true)
+
+This will automatically install the handler at a common location for 64 bit applications: *C:/Program Files/Lancelot Software/RdpProtocolHandler/*.
+
+### Manual Installation
+
+Open Windows Terminal (or plain PowerShell), as administrator, in the same directory as RdpProtocoleHandler.exe and use the desired command:
+
+| Command | Action |
+|---------|-----|
+| `.\RdpProtocoleHandler.exe /install` | Install |
+| `.\RdpProtocoleHandler.exe /uninstall` | Uninstall |
+
+**Important: Do not move the files after you've installed.** The handler's exe will be registered at its current path. If you need to move it, use the `/uninstall` command first, then move it to the new location reinstall it. The 
 
 ## Log file
 The app logs its usages to file using [NLog](http://nlog-project.org). By default, log file is created in `C:\Users\<currentUser>\AppData\Local\Temp\rdppotocolhandler-logs`. You can change the logging behavior by creating the NLog.config file (for details go to NLog documentation). 

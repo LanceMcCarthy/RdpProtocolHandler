@@ -1,8 +1,10 @@
 ## Automatic Installation (recommended)
 
-Execute the `install.ps1` / `uninstall.ps1` to install/uninstall the protocol handler.
+Execute the `install.ps1` / `uninstall.ps1` to install/uninstall the protocol handler:
 
-This will automatically install the handler at a common location: *C:/Program Files/RdpProtocolHandler/*.
+![Install](https://github.com/LanceMcCarthy/RdpProtocolHandler/blob/master/img/install.png?raw=true)
+
+This will automatically install the handler at a common location for 64 bit applications: *C:/Program Files/Lancelot Software/RdpProtocolHandler/*.
 
 ## Manual Installation
 
