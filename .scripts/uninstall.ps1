@@ -1,8 +1,8 @@
-Start-Process "$psHome\powershell.exe" -Verb Runas -ArgumentList '-command "Get-Service"'
+$thisProcess = Start-Process "$psHome\powershell.exe" -Verb Runas -ArgumentList '-command "Get-Service"'
 
 Write-Output "Verifying current installation..."
 
-$result = Get-Item "C:\Program Files\RdpProtocolHandler\*.*"
+$result = Get-Item "C:\Program Files\Lancelot Software\RdpProtocolHandler\*.*"
 
 if($null -ne $result) {
     Write-Output "Uninstalling RdpProtocolHandler..."
@@ -14,3 +14,5 @@ else{
 }
 
 Write-Output "Uninstall complete!"
+
+Stop-Process $thisProcess.ID
