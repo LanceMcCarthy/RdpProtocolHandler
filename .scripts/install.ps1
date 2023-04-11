@@ -1,30 +1,27 @@
-$thisProcess = Start-Process "$psHome\powershell.exe" -Verb Runas -ArgumentList '-command "Get-Service"'
-
 Write-Output "Checking for previous RdpProtocolHandler installation..."
 
-$result = Get-Item "C:\Program Files\Lancelot Software\RdpProtocolHandler\*.*"
+if(Test-Path -Path "$($ENV:AppData)\Local\RdpProtocolHandler\RdpProtocolHandler.exe" -PathType Leaf) {
+    Write-Output "Discovered older installation, uninstalling now..."
 
-if($null -ne $result) {
-    Write-Output "Checking for previous RdpProtocolHandler installation..."
-    $uninstallProcess = Start-Process ".\RdpProtocolHandler.exe" -ArgumentList "/uinstall" -Verb RunAs -PassThru
+    $uninstallProcess = Start-Process "$($ENV:AppData)\Local\RdpProtocolHandler\RdpProtocolHandler.exe" -ArgumentList "/uinstall" -Verb RunAs -PassThru
     $uninstallProcess.WaitForExit()
-    
-    Write-Output "Creating directory..."
-    New-Item -ItemType "directory" -Path "C:\Program Files\Lancelot Software\RdpProtocolHandler" -Force
 }
 else{
-    Write-Output "RdpProtocolHandler was not installed, moving forward with installation."
+    Write-Output "RdpProtocolHandler was not previously installed, installing now..."
+
+    Write-Output "Creating directory..."
+    New-Item -ItemType "directory" -Path "$($ENV:AppData)\Local\RdpProtocolHandler" -Force
 }
 
 Write-Output "Copying files to installation directory..."
-Copy-Item -Path ".\*" -Destination "C:\Program Files\Lancelot Software\RdpProtocolHandler" -Force
+Copy-Item -Path ".\*" -Destination "$($ENV:AppData)\Local\RdpProtocolHandler" -Force
 
 Write-Output "Changing to installation directory..."
-Set-Location "C:\Program Files\RdpProtocolHandler"
+Set-Location "$($ENV:AppData)\Local\RdpProtocolHandler"
 
 Write-Output "Installing RdpProtocolHandler..."
 
-$installProcess = Start-Process ".\RdpProtocolHandler.exe" -ArgumentList "/install" -Verb RunAs -PassThru
+$installProcess = Start-Process "$($ENV:AppData)\Local\RdpProtocolHandler\RdpProtocolHandler.exe" -ArgumentList "/install" -Verb RunAs -PassThru
 $installProcess.WaitForExit()
 
-Stop-Process $thisProcess.ID
+Write-Output "Installation complete!"
